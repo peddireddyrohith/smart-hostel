@@ -1,0 +1,27 @@
+# ─── Environment Variables (NEVER commit these!) ──────────
+.env
+.env.local
+.env.production
+
+# ─── Node Modules ─────────────────────────────────────────
+node_modules/
+
+# ─── Logs ─────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+
+# ─── OS Files ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Build Output ─────────────────────────────────────────
+dist/
+build/
+
+# ─── IDE / Editor ─────────────────────────────────────────
+.vscode/
+.idea/
+
+# ─── PDF Receipts (generated at runtime) ─────────────────
+receipts/
