@@ -30,13 +30,16 @@ export const createCashfreeOrder = async ({ orderId, amount, customerName, custo
   };
 
   initCashfree();
-  try {
-    const response = await Cashfree.PGCreateOrder('2023-08-01', orderRequest);
-    return response.data; // Contains payment_session_id
-  } catch (error) {
-    console.error('❌ Cashfree Error details:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || 'Failed to create Cashfree order');
-  }
+  return new Promise((resolve, reject) => {
+    Cashfree.PGCreateOrder('2023-08-01', orderRequest)
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        console.error('❌ SDK Error:', error.response?.data?.message || error.message);
+        reject(new Error(error.response?.data?.message || 'Failed to create Cashfree order'));
+      });
+  });
 };
 
 // ── Verify Webhook Signature ───────────────────────────────
