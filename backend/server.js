@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import connectDB from './config/db.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -12,9 +14,6 @@ import tenantRoutes from './routes/tenant.js';
 
 // ── Load environment variables ─────────────────────────────
 dotenv.config();
-
-// ── Connect to MongoDB ─────────────────────────────────────
-connectDB();
 
 // ── Initialize Express app ─────────────────────────────────
 const app = express();
@@ -34,16 +33,34 @@ app.use('/api/auth',   authRoutes);
 app.use('/api/admin',  adminRoutes);
 app.use('/api/tenant', tenantRoutes);
 
-// ── Health Check ───────────────────────────────────────────
-app.get('/', (req, res) => {
-  res.json({ message: '🏠 Smart Hostel API is running...' });
-});
+// ── Serve Frontend ─────────────────────────────────────────
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React frontend app
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  // For any other route, send back the React index.html file
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+  });
+} else {
+  // ── Health Check (Development) ───────────────────────────
+  app.get('/', (req, res) => {
+    res.json({ message: '🏠 Smart Hostel API is running...' });
+  });
+}
 
 // ── Global Error Handler (must be last middleware) ─────────
 app.use(errorHandler);
 
 // ── Start Server ───────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+
+// Connect to MongoDB first, then start the server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
 });
