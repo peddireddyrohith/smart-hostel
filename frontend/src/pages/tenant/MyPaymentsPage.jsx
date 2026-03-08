@@ -58,7 +58,8 @@ export default function MyPaymentsPage() {
       if (!window.Cashfree) {
         await loadCashfreeSDK();
       }
-      const cashfree = window.Cashfree({ mode: 'sandbox' });
+      const cashfreeMode = import.meta.env.VITE_CASHFREE_MODE || 'sandbox';
+      const cashfree = window.Cashfree({ mode: cashfreeMode });
       cashfree.checkout({
         paymentSessionId: data.paymentSessionId,
         returnUrl: `${window.location.origin}/tenant/payments?order_id=${data.orderId}`,
