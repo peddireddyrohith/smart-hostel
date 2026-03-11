@@ -25,7 +25,7 @@ export const createCashfreeOrder = async ({ orderId, amount, customerName, custo
       customer_phone: customerPhone || '9999999999',
     },
     order_meta: {
-      return_url: `${process.env.CLIENT_URL}/tenant/payments?order_id={order_id}`,
+      return_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/tenant/payments?order_id={order_id}`,
     },
   };
 
